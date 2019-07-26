@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accp.springboot001.dao.DeptMapper" >
+  <resultMap id="BaseResultMap" type="com.accp.springboot001.pojo.Dept" >
+    <id column="deptid" property="deptid" jdbcType="INTEGER" />
+    <result column="deptname" property="deptname" jdbcType="VARCHAR" />
+    <result column="deptaddress" property="deptaddress" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT * FROM tbl_dept
+  </select>
+  <sql id="Base_Column_List" >
+    deptid, deptname, deptaddress
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_dept
+    where deptid = #{deptid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tbl_dept
+    where deptid = #{deptid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.accp.springboot001.pojo.Dept" >
+    insert into tbl_dept (deptid, deptname, deptaddress
+      )
+    values (#{deptid,jdbcType=INTEGER}, #{deptname,jdbcType=VARCHAR}, #{deptaddress,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.accp.springboot001.pojo.Dept" >
+    insert into tbl_dept
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deptid != null" >
+        deptid,
+      </if>
+      <if test="deptname != null" >
+        deptname,
+      </if>
+      <if test="deptaddress != null" >
+        deptaddress,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deptid != null" >
+        #{deptid,jdbcType=INTEGER},
+      </if>
+      <if test="deptname != null" >
+        #{deptname,jdbcType=VARCHAR},
+      </if>
+      <if test="deptaddress != null" >
+        #{deptaddress,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.accp.springboot001.pojo.Dept" >
+    update tbl_dept
+    <set >
+      <if test="deptname != null" >
+        deptname = #{deptname,jdbcType=VARCHAR},
+      </if>
+      <if test="deptaddress != null" >
+        deptaddress = #{deptaddress,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where deptid = #{deptid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.accp.springboot001.pojo.Dept" >
+    update tbl_dept
+    set deptname = #{deptname,jdbcType=VARCHAR},
+      deptaddress = #{deptaddress,jdbcType=VARCHAR}
+    where deptid = #{deptid,jdbcType=INTEGER}
+  </update>
+</mapper>

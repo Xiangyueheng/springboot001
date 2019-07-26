@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+th{
+	background-color:#DDDDDD;
+}
+	#detptab>tr>td{
+		width:200px;
+		border:1px solid #81E5FF;
+		text-align:center;
+	}
+	.emptab>tr>td{
+		width:100px;
+		text-align:center;
+	}
+</style>
+</head>
+<body>
+<h1>部门列表</h1>
+<table id="tabmax">
+	<thead>
+		<th>部门编号1</th>
+		<th>部门名称</th>
+		<th>部门地址</th>
+	</thead>
+	<tbody id="detptab">
+	
+	</tbody>
+</table>
+</body>
+<script type="text/javascript" src="/js/jquery-1.8.3.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$.getJSON("/c/dept/selectdept",{},function(res){
+			$.each(res,function(i,obj){
+				$("#detptab").append("<tr><td >"+obj.deptid+"</td><td class='deptname'>"+obj.deptname+"</td><td>"+obj.deptaddress+"</td></tr>")
+			})
+		})
+	})
+	var toggle=0;//判断点击次数
+	$(document).on("click",".deptname",function(){
+		toggle++;
+		if(toggle%2==1){
+			var detpid=$(this).prev().text();//部门id
+			if($(this).parent().next().attr("name")=="empp"){
+				$(this).parent().next().remove();
+			}
+			$tr="<tr name='empp'><td colspan=3><table><thead><th name='aa'>姓名</th><th>工作</th><th>工资</th><th>入职时间</th><th>奖金</th><th>操作</th></thead><tbody  class='emptab' name='emptab'></tbody></table></td></tr>"
+			$(this).parent().after($tr);
+			selectemp(detpid,$(this).parent().next().find(".emptab"))
+			
+			
+		}else{
+			if($(this).parent().next().attr("name")=="empp"){
+				$(this).parent().next().remove();
+			}
+		}
+		
+	})
+	
+	
+	function selectemp(detpid,trval){
+		 setTimeout(function() {
+		$.getJSON("/c/dept/selectempbyid",{detpid:detpid},function(res){
+			$.each(res,function(i,obj){
+				$(trval).append("<tr><td >"+obj.empname+"</td><td>"+obj.empwork+"</td><td>"+obj.empprice+"</td><td>"+obj.empdate+"</td><td>"+obj.empjangjin+"</td><td name='deleteemp'><span style='display:none'>"+obj.empid+"</span><span style='display:none'>"+obj.deptid+"</span>删除</td></tr>")
+			})
+		})
+		},200);
+	}
+	
+	$("[name=deleteemp]").live("click",function(){
+		var empid=$(this).find("span:eq(0)").text();
+		var detpid=$(this).find("span:eq(1)").text();
+		var detpname=$(this).parents("[name=empp]").prev().find("td:eq(1)").text();
+		var index=$(this).parent().parent().parent().index();
+		
+		if(confirm("确定删除吗")){
+			
+			$.getJSON("/c/dept/delete",{empid:empid,detpid:detpid},function(res){
+				if(res.code=="200"){
+					alert("删除成功")
+					alert(detpname+"剩余人数"+res.rs)
+					
+				}
+			})
+			
+			$(this).parents(".emptab").html("")
+			 setTimeout(function() {
+				$.getJSON("/c/dept/selectempbyid",{detpid:detpid},function(res){
+						$.each(res,function(i,obj){
+							$("[name=emptab]").eq(0).append("<tr><td >"+obj.empname+"</td><td>"+obj.empwork+"</td><td>"+obj.empprice+"</td><td>"+obj.empdate+"</td><td>"+obj.empjangjin+"</td><td name='deleteemp'><span style='display:none'>"+obj.empid+"</span><span style='display:none'>"+obj.deptid+"</span>删除</td></tr>")
+						})
+					})
+				},200);
+		}
+	})
+</script>
+</html>
